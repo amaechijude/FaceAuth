@@ -28,7 +28,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=150, unique=False,null=True, blank=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=250)
-    avatar = models.ImageField(upload_to='media/Users', null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='media/Users', null=True, blank=True)
+    profile_picture_encodings = models.JSONField(default=list)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -38,6 +39,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f"{self.email}"
+        return f"{self.email} {self.full_name}"
     class Meta:
         verbose_name_plural = "Users"
