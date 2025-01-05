@@ -2,7 +2,7 @@ import json
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.core.files.storage import default_storage
 
 from core.models import User
@@ -52,38 +52,43 @@ def register_user(request):
 
 
 def login_user(request):
-    if not request.method == 'POST':
-        return HttpResponse("Invalid method")
-    
-    email = request.POST.get('email')
-    profile_picture = request.FILES.get('profile_picture')
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        profile_picture = request.FILES.get('profile_picture')
 
-    if not email or not profile_picture:
-        return HttpResponse("Email and Profile picture is required")
-    
-    # Try finding user
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return HttpResponse(f"User with the email: {email} does not exist or is no longer active")
-    
-    ## try process uploaded image
-    try:
-        face_found, img_encoding = generate_picture_encodings(profile_picture)
-        if not face_found:
-            return HttpResponse("No face Detected")
-    except Exception as e:
-        data = {"message": "Unable to process image", "Error": e}
-        return HttpResponse(json.dumps(data, indent=4))
-    
-    # compare
-    match_profile_picture: bool = compare_picture_encodings(list(user.profile_picture_encodings), img_encoding)
-    if not match_profile_picture:
-        return HttpResponse("Profile picture was not Match. Contact the admin")
-    
-    login(request, user)
-    return redirect('index_page')
+        if not email or not profile_picture:
+            return HttpResponse("Email and Profile picture is required")
+        
+        # Try finding user
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return HttpResponse(f"User with the email: {email} does not exist or is no longer active")
+        
+        ## try process uploaded image
+        try:
+            face_found, img_encoding = generate_picture_encodings(profile_picture)
+            if not face_found:
+                return HttpResponse("No face Detected")
+        except Exception as e:
+            data = {"message": "Unable to process image", "Error": e}
+            return HttpResponse(json.dumps(data, indent=4))
+        
+        # compare
+        match_profile_picture: bool = compare_picture_encodings(list(user.profile_picture_encodings), img_encoding)
+        if not match_profile_picture:
+            return HttpResponse("Profile picture was not Match. Contact the admin")
+        
+        ## Loging an redirect the user
+        login(request, user)
+        return redirect('index_page')
 
 @login_required(login_url='login_user')
 def index_page(request):
     return render(request, 'index.html')
+
+def logout_user(request):
+    logout(request)
+    return redirect('login_user')
