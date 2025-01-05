@@ -1,0 +1,47 @@
+```
+# Django-specific files
+*.pyc
+*.pyo
+__pycache__/
+.DS_Store
+.idea/
+.vscode/
+
+# Database files
+db.sqlite3
+db.sqlite*
+*.db
+*.db-journal
+*.db-shm
+*.s3db
+
+# Media files
+media/
+public/
+uploads/
+
+# Static files (if not collected)
+static/
+
+# Test output
+*.log
+*.out
+*.err
+coverage/
+htmlcov/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+
+# Local configuration
+local.py
+env/
+venv/
+
+# Miscellaneous
+*.swp
