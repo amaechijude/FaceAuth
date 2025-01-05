@@ -19,10 +19,11 @@
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email address</label>
-                                {{ form.email }}
+                                <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
                             </div>
                             <div class="mb-3">
                                 <label for="profile_picture" class="form-label">Profile Picture</label>
+                                <input type="file" name="profile_picture" id="profile_picture" accept="image/*" capture="user" required>
                             </div>
                                 <button type="submit" class="btn btn-primary">Register</button>
                             </div>
