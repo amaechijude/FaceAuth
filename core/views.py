@@ -4,21 +4,25 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.core.files.storage import default_storage
+import numpy as np
 
 from core.models import User
 from .forms import RegisterForm
+
+
 import face_recognition
-# Create your views here.
 
 def generate_picture_encodings(picture_path: str) -> tuple:
     img = face_recognition.load_image_file(picture_path) # loads the image
     img_encodings = face_recognition.face_encodings(img)
-
+    np_array = np.array(img_encodings)
     face_found = True if len(img_encodings) > 0 else False
-    return (face_found, img_encodings)
+    return (face_found, np_array.tolist())
 
-def compare_picture_encodings(saved_picture_encoding: list, uploaded_picture_encoding: list) -> bool:
-    compare_result = face_recognition.compare_faces([saved_picture_encoding], uploaded_picture_encoding[0])
+def compare_picture_encodings(saved_picture_encoding, uploaded_picture_encoding) -> bool:
+    data_1 = np.array(saved_picture_encoding)
+    data_2 = np.array(uploaded_picture_encoding)
+    compare_result = face_recognition.compare_faces(data_1, data_2[0])
 
     return True if compare_result[0] else False
 

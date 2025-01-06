@@ -20,6 +20,8 @@ media/
 public/
 uploads/
 
+#migrations
+core/migrations
 # Static files (if not collected)
 static/
 
