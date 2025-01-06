@@ -65,7 +65,7 @@ def login_user(request):
         if not email or not profile_picture:
             return HttpResponse("Email and Profile picture is required")
         
-        # Try finding user
+        # Try finding user  ``
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:

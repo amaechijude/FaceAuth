@@ -1,5 +1,5 @@
 import os
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.core.files import File
 from .models import User
 from FaceAuth.settings import BASE_DIR
@@ -37,13 +37,39 @@ class TestCompareEncoding(TestCase):
         self.face_found, self.img_encodings = generate_picture_encodings(img_path)
         self.second_face_found, self.second_img_encodings = generate_picture_encodings(primary_img)
         #compare
-        self.compare = compare_picture_encodings(self.img_encodings, self.img_encodings_second)
+        self.compare = compare_picture_encodings(self.img_encodings, self.second_img_encodings)
 
     def test_comparism(self):
         self.assertTrue(self.compare)
         self.assertTrue(self.face_found)
         self.assertTrue(self.second_face_found)
 
-# class TestIndexView(TestCase):
-#     def setup(self):
-#         pass
+
+class TestIndexView(TestCase):
+    def setup(self):
+        self.client = Client()
+    
+    def test_index_page(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 302) # 300 for redirect to login page
+        self.assertTemplateUsed('index.html')
+
+class TestRegisterView(TestCase):
+    def setup(self):
+        self.face_found, self.img_encodings = generate_picture_encodings(img_path)
+        self.client = Client()
+    
+    def test_register_page(self):
+        response = self.client.get('/user/register')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('register.html')
+
+    def test_register_user(self):
+        face_found, img_encodings = generate_picture_encodings(img_path)
+        response = self.client.post('/user/register', {
+            'email': "user@email.com",
+            'password':"password", 'full_name': "User Name",
+            'profile_picture_encodings': img_encodings
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(face_found)
