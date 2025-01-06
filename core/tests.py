@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.files import File
 from .models import User
 from FaceAuth.settings import BASE_DIR
-from .views import generate_picture_encodings, compare_picture_encodings, index_page, register_user, login_user
+from .views import generate_picture_encodings, compare_picture_encodings#, index_page, register_user, login_user
 
 
 
@@ -35,14 +35,14 @@ class UserTestCase(TestCase):
 class TestCompareEncoding(TestCase):
     def setUp(self):
         self.face_found, self.img_encodings = generate_picture_encodings(img_path)
-        self.face_found_second, self.img_encodings_second = generate_picture_encodings(primary_img)
+        self.second_face_found, self.second_img_encodings = generate_picture_encodings(primary_img)
         #compare
         self.compare = compare_picture_encodings(self.img_encodings, self.img_encodings_second)
 
     def test_comparism(self):
         self.assertTrue(self.compare)
         self.assertTrue(self.face_found)
-        self.assertTrue(self.face_found_second)
+        self.assertTrue(self.second_face_found)
 
 # class TestIndexView(TestCase):
 #     def setup(self):

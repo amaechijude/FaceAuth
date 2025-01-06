@@ -19,7 +19,7 @@ def generate_picture_encodings(picture_path: str) -> tuple:
     face_found = True if len(img_encodings) > 0 else False
     return (face_found, np_array.tolist())
 
-def compare_picture_encodings(saved_picture_encoding, uploaded_picture_encoding) -> bool:
+def compare_picture_encodings(saved_picture_encoding: json, uploaded_picture_encoding: json) -> bool:
     data_1 = np.array(saved_picture_encoding)
     data_2 = np.array(uploaded_picture_encoding)
     compare_result = face_recognition.compare_faces(data_1, data_2[0])
