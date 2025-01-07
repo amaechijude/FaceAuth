@@ -3,48 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Template</title>
+    <title>Registration Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #001f3f;
+            color: white;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 5rem auto;
+            background: #002952;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .btn-custom {
+            background-color: #ff851b;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #ff7700;
+        }
+        a {
+            color: #ff851b;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #ff7700;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8 col-sm-12">
-                <div class="card shadow">
-                    <div class="card-header text-center bg-primary text-white">
-                        <h3>Register</h3>
-                    </div>
-                    <div class="card-body">
-                        <form action="{% url 'register_user' %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email address</label>
-                                {{ form.email }}
-                            </div>
-                            <div class="mb-3">
-                                <label for="full_name" class="form-label">Full Name</label>
-                                {{ form.full_name }}
-                            </div>
-                            <div class="mb-3">
-                                <label for="profile_picture" class="form-label">Profile Picture</label>
-                                {{ form.profile_picture }}
-                            </div>
 
-                            <div class="mb-3">
-                                <label for="password1" class="form-label">Password</label>
-                                {{ form.password1 }}
-                            </div>
-                            <div class="mb-3">
-                                <label for="password2" class="form-label">Confirm Password</label>
-                                {{ form.password2 }}
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Register</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    <!-- Registration Page -->
+    <div class="form-container">
+        <h2 class="text-center">Register</h2>
+        <form method="POST" action="/register" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                {{ form.email }}
             </div>
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                {{ form.full_name }}
+            </div>
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">Profile Picture</label>
+                {{ form.profile_picture }}
+            </div>
+            <div class="mb-3">
+                <label for="password1" class="form-label">Password</label>
+                {{ form.password1 }}
+            </div>
+            <div class="mb-3">
+                <label for="password2" class="form-label">Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-custom w-100">Register</button>
+            </div>
+        </form>
+        <div class="text-center mt-3">
+            <p>Already have an account? <a href="/login">Login here</a>.</p>
         </div>
     </div>
 
