@@ -1,4 +1,5 @@
 import json
+import pprint
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
@@ -23,8 +24,11 @@ def compare_picture_encodings(saved_picture_encoding: json, uploaded_picture_enc
     data_1 = np.array(saved_picture_encoding)
     data_2 = np.array(uploaded_picture_encoding)
     compare_result = face_recognition.compare_faces(data_1, data_2[0])
-
-    return True if compare_result[0] else False
+    try:
+        compare_output = compare_result[0]
+    except IndexError:
+        return False
+    return True if compare_output else False
 
 
 def register_user(request):
@@ -61,7 +65,7 @@ def login_user(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         profile_picture = request.FILES.get('profile_picture')
-
+        pprint.pprint(email)
         if not email or not profile_picture:
             return HttpResponse("Email and Profile picture is required")
         
@@ -81,7 +85,7 @@ def login_user(request):
             return HttpResponse(json.dumps(data, indent=4))
         
         # compare
-        match_profile_picture: bool = compare_picture_encodings(list(user.profile_picture_encodings), img_encoding)
+        match_profile_picture: bool = compare_picture_encodings(user.profile_picture_encodings, img_encoding)
         if not match_profile_picture:
             return HttpResponse("Profile picture was not Match. Contact the admin")
         
