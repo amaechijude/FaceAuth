@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from decouple import config
 import os
 from pathlib import Path
 
@@ -114,7 +115,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+GEMINI_API_KEY = config('GEMINI_API_KEY')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 

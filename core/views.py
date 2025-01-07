@@ -1,10 +1,14 @@
 import json
 import pprint
-from django.http import HttpResponse
+from FaceAuth.settings import GEMINI_API_KEY
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
+from google import genai
+# from google.genai import types
 import numpy as np
 
 from core.models import User
@@ -65,7 +69,6 @@ def login_user(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         profile_picture = request.FILES.get('profile_picture')
-        pprint.pprint(email)
         if not email or not profile_picture:
             return HttpResponse("Email and Profile picture is required")
         
@@ -93,10 +96,52 @@ def login_user(request):
         login(request, user)
         return redirect('index_page')
 
-@login_required(login_url='login_user')
+# @login_required(login_url='login_user')
 def index_page(request):
     return render(request, 'index.html')
 
 def logout_user(request):
     logout(request)
     return redirect('login_user')
+
+
+@csrf_exempt
+async def get_vacation_recomendation(request):
+    if not request.method == 'POST':
+        return HttpResponse("Method not supported")
+
+    destination = request.POST.get('destination')
+    travel_dates = request.POST.get("travel_dates")
+    budget = request.POST.get('budget')
+    group_size = request.POST.get("group_size")
+    activities = request.POST.get("activities")
+    accommodation = request.POST.get("accommodation")
+    special_requirements = request.POST.get("special_requirements")
+
+    prompt = f"""
+        I am planning a vacation and need personalized recommendations based on the following details:
+
+        1. **Destination Preferences:** {destination}.  
+        2. **Travel Dates:** {travel_dates}.  
+        3. **Budget:** Approximately {budget}.  
+        4. **Group Size and Type:** {group_size}.  
+        5. **Activities:**  {activities}.  
+        6. **Accommodation Preferences:** {accommodation}.
+        7. **Special Requirements:** {special_requirements}.
+
+        Based on this information, can you suggest a detailed vacation plan, including recommended destinations, activities, accommodations, and any additional travel tips?
+    """
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    try:
+        response = await client.aio.models.generate_content(model='gemini-1.5-flash', contents=prompt)
+    except Exception as e:
+        pprint.pprint(e)
+        return JsonResponse({
+            "message": "failed",
+            "response": "Ai unable to generate recommendations. Try again later",
+        })
+    
+    return JsonResponse({
+        "message": "success",
+        "response": response.text
+    })
