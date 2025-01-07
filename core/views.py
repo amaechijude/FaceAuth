@@ -106,10 +106,11 @@ def logout_user(request):
 
 
 @csrf_exempt
-async def get_vacation_recomendation(request):
+def get_vacation_recomendation(request):
     if not request.method == 'POST':
         return HttpResponse("Method not supported")
 
+    starting_point = request.POST.get('starting_point')
     destination = request.POST.get('destination')
     travel_dates = request.POST.get("travel_dates")
     budget = request.POST.get('budget')
@@ -121,6 +122,7 @@ async def get_vacation_recomendation(request):
     prompt = f"""
         I am planning a vacation and need personalized recommendations based on the following details:
 
+        0. **Staring Point** {starting_point}
         1. **Destination Preferences:** {destination}.  
         2. **Travel Dates:** {travel_dates}.  
         3. **Budget:** Approximately {budget}.  
@@ -133,15 +135,16 @@ async def get_vacation_recomendation(request):
     """
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:
-        response = await client.aio.models.generate_content(model='gemini-1.5-flash', contents=prompt)
+        response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
+        pprint.pprint(response.text)
     except Exception as e:
         pprint.pprint(e)
         return JsonResponse({
-            "message": "failed",
+            "failed": "failed",
             "response": "Ai unable to generate recommendations. Try again later",
         })
     
     return JsonResponse({
-        "message": "success",
+        "success": "success",
         "response": response.text
     })
