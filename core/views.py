@@ -96,7 +96,7 @@ def login_user(request):
         login(request, user)
         return redirect('index_page')
 
-# @login_required(login_url='login_user')
+@login_required(login_url='login_user')
 def index_page(request):
     return render(request, 'index.html')
 
